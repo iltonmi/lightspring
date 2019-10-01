@@ -32,8 +32,8 @@ public class ResourceTest {
 
 	@Test
 	public void testFileSystemResource() throws Exception {
-
-		Resource r = new FileSystemResource("E:\\some Java files\\lightspring\\src\\test\\resources\\petstore-v1.xml");
+		//使用相对路径
+		Resource r = new FileSystemResource("src\\test\\resources\\petstore-v1.xml");
 
 		InputStream is = null;
 
