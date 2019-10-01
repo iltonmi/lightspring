@@ -9,8 +9,6 @@ import org.lightspring.core.io.Resource;
 
 public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
 
-    private DefaultBeanFactory factory = null;
-
     public ClassPathXmlApplicationContext(String configFile) {
         super(configFile);
     }
