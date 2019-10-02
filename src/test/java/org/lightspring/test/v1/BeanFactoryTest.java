@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.lightspring.beans.BeanDefinition;
 import org.lightspring.beans.factory.BeanCreationException;
 import org.lightspring.beans.factory.BeanDefinitionStoreException;
-import org.lightspring.beans.factory.BeanFactory;
 import org.lightspring.beans.factory.support.DefaultBeanFactory;
 import org.lightspring.beans.factory.xml.XmlBeanDefinitionReader;
 import org.lightspring.core.io.ClassPathResource;
@@ -27,7 +26,7 @@ public class BeanFactoryTest {
 
     @Test
     public void testGetBean(){
-        reader.loadBeanDefinition(new ClassPathResource("petstore-v1.xml"));
+        reader.loadBeanDefinitions(new ClassPathResource("petstore-v1.xml"));
         BeanDefinition bd = factory.getBeanDefinition("petStore");
 
         assertTrue(bd.isSingleton());
@@ -48,7 +47,7 @@ public class BeanFactoryTest {
     @Test
     public void testInvalidBean(){
 
-        reader.loadBeanDefinition(new ClassPathResource("petstore-v1.xml"));
+        reader.loadBeanDefinitions(new ClassPathResource("petstore-v1.xml"));
         try{
             factory.getBean("invalidBean");
         }catch(BeanCreationException e){
@@ -60,7 +59,7 @@ public class BeanFactoryTest {
     @Test
     public void testInvalidXML(){
         try{
-            reader.loadBeanDefinition(new ClassPathResource("xxxx.xml"));
+            reader.loadBeanDefinitions(new ClassPathResource("xxxx.xml"));
         }catch(BeanDefinitionStoreException e){
             return;
         }
