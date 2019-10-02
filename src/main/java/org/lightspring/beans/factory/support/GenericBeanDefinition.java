@@ -1,6 +1,7 @@
 package org.lightspring.beans.factory.support;
 
 import org.lightspring.beans.BeanDefinition;
+import org.lightspring.beans.ConstructorArgument;
 import org.lightspring.beans.PropertyValue;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class GenericBeanDefinition implements BeanDefinition {
 	private boolean prototype = false;
 	private String scope = SCOPE_DEFAULT;
 	private List<PropertyValue> propertyValues = new ArrayList<PropertyValue>();
+	private ConstructorArgument constructorArgument = new ConstructorArgument();
 
 	public GenericBeanDefinition(String id, String beanClassName) {
 		this.id = id;
@@ -42,4 +44,14 @@ public class GenericBeanDefinition implements BeanDefinition {
 	public List<PropertyValue> getPropertyValues() {
 		return this.propertyValues;
 	}
+	public ConstructorArgument getConstructorArgument() {
+		return this.constructorArgument;
+	}
+	public String getID() {
+		return this.id;
+	}
+	public boolean hasConstructorArgumentValues() {
+		return !this.constructorArgument.isEmpty();
+	}
+
 }

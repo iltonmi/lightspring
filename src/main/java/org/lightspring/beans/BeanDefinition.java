@@ -9,6 +9,9 @@ public interface BeanDefinition {
 
     String getBeanClassName();
     List<PropertyValue> getPropertyValues();
+    public ConstructorArgument getConstructorArgument();
+    public String getID();
+    public boolean hasConstructorArgumentValues();
 
     public boolean isSingleton();
     public boolean isPrototype();

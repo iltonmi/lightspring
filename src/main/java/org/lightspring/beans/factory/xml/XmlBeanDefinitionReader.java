@@ -6,6 +6,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.lightspring.beans.BeanDefinition;
+import org.lightspring.beans.ConstructorArgument;
 import org.lightspring.beans.PropertyValue;
 import org.lightspring.beans.factory.BeanDefinitionStoreException;
 import org.lightspring.beans.factory.config.RuntimeBeanReference;
@@ -35,6 +36,10 @@ public class XmlBeanDefinitionReader {
 
     public static final String NAME_ATTRIBUTE = "name";
 
+    public static final String CONSTRUCTOR_ARG_ELEMENT = "constructor-arg";
+
+    public static final String TYPE_ATTRIBUTE = "type";
+
     protected final Log logger = LogFactory.getLog(getClass());
 
     BeanDefinitionRegistry registry;
@@ -50,15 +55,16 @@ public class XmlBeanDefinitionReader {
             SAXReader reader = new SAXReader();
             Document doc = reader.read(is);
             Element root = doc.getRootElement();
-            Iterator<Element> itr = root.elementIterator();
+            Iterator itr = root.elementIterator();
             while (itr.hasNext()) {
-                Element ele = itr.next();
+                Element ele = (Element) itr.next();
                 String id = ele.attributeValue(ID_ATTRIBUTE);
                 String beanClassName = ele.attributeValue(CLASS_ATTRIBUTE);
                 BeanDefinition bd = new GenericBeanDefinition(id, beanClassName);
                 if (ele.attribute(SCOPE_ATTRIBUTE) != null){
                     bd.setScope(ele.attributeValue(SCOPE_ATTRIBUTE));
                 }
+                parseConstructorArgElements(ele,bd);
                 parsePropertyElement(ele,bd);
                 this.registry.registerBeanDefinition(id, bd);
             }
@@ -75,10 +81,33 @@ public class XmlBeanDefinitionReader {
         }
     }
 
-    public void parsePropertyElement(Element beanElem, BeanDefinition bd){
-        Iterator<Element> itr = beanElem.elementIterator(PROPERTY_ELEMENT);
+    public void parseConstructorArgElements(Element beanEle, BeanDefinition bd){
+        Iterator itr = beanEle.elementIterator(CONSTRUCTOR_ARG_ELEMENT);
         while (itr.hasNext()){
-            Element propElem = itr.next();
+            Element ele = (Element)itr.next();
+            parseConstructorArgElement(ele, bd);
+        }
+    }
+
+    public void parseConstructorArgElement(Element ele, BeanDefinition bd){
+        String typeAttr = ele.attributeValue(TYPE_ATTRIBUTE);
+        String nameAttr = ele.attributeValue(NAME_ATTRIBUTE);
+        Object value = parsePropertyValue(ele, bd, null);
+        ConstructorArgument.ValueHolder valueHolder = new ConstructorArgument.ValueHolder(value);
+        if (StringUtils.hasLength(typeAttr)) {
+            valueHolder.setType(typeAttr);
+        }
+        if (StringUtils.hasLength(nameAttr)) {
+            valueHolder.setName(nameAttr);
+        }
+
+        bd.getConstructorArgument().addArgumentValue(valueHolder);
+    }
+
+    public void parsePropertyElement(Element beanElem, BeanDefinition bd){
+        Iterator itr = beanElem.elementIterator(PROPERTY_ELEMENT);
+        while (itr.hasNext()){
+            Element propElem = (Element)itr.next();
             String propName = propElem.attributeValue(NAME_ATTRIBUTE);
             if (!StringUtils.hasLength(propName)){
                 logger.fatal("Tag 'property' must have a 'name' attribute");

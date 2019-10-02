@@ -25,7 +25,7 @@ public class BeanDefinitionTestV3 {
 		reader.loadBeanDefinitions(resource);
 
 		BeanDefinition bd = factory.getBeanDefinition("petStore");
-		Assert.assertEquals("org.litespring.service.v3.PetStoreService", bd.getBeanClassName());
+		Assert.assertEquals("org.lightspring.service.v3.PetStoreService", bd.getBeanClassName());
 		
 		ConstructorArgument args = bd.getConstructorArgument();
 		List<ValueHolder> valueHolders = args.getArgumentValues();
