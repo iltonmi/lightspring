@@ -28,7 +28,7 @@ public class BeanDefinitionTestV2 {
 		for (PropertyValue prop: pvs){
 			System.out.println(prop.getName());
 		}
-		Assert.assertTrue(pvs.size() == 2);
+		Assert.assertTrue(pvs.size() == 4);
 		{
 			PropertyValue pv = this.getPropertyValue("accountDao", pvs);
 			

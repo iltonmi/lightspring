@@ -4,6 +4,7 @@ package org.lightspring.beans.factory.support;
 
 import org.lightspring.beans.BeanDefinition;
 import org.lightspring.beans.PropertyValue;
+import org.lightspring.beans.SimpleTypeConverter;
 import org.lightspring.beans.factory.BeanCreationException;
 import org.lightspring.beans.factory.config.ConfigurableBeanFactory;
 import org.lightspring.util.ClassUtils;
@@ -76,17 +77,18 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
             return;
         }
         BeanDefinitionValueResolver resolver = new BeanDefinitionValueResolver(this);
+        SimpleTypeConverter converter = new SimpleTypeConverter();
         try{
             for (PropertyValue pv : pvs){
                 String propName = pv.getName();
                 Object originalValue = pv.getValue();
                 Object resolvedValue = resolver.resolveValueIfNecessary(originalValue);
-                this.populateBean(this.beanDefinitionMap.get(propName), resolvedValue);
                 BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());
                 PropertyDescriptor[] pds = beanInfo.getPropertyDescriptors();
                 for (PropertyDescriptor pd : pds){
                     if (pd.getName().equals(propName)){
-                        pd.getWriteMethod().invoke(bean, resolvedValue);
+                        Object convertedValue = converter.convertIfNecessary(resolvedValue, pd.getPropertyType());
+                        pd.getWriteMethod().invoke(bean, convertedValue);
                         break;
                     }
                 }
