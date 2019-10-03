@@ -17,4 +17,10 @@ public interface BeanDefinition {
     public boolean isPrototype();
     String getScope();
     void setScope(String scope);
+
+    public Class<?> resolveBeanClass(ClassLoader classLoader) throws ClassNotFoundException;
+
+    public Class<?> getBeanClass() throws IllegalStateException;
+
+    public boolean hasBeanClass();
 }
