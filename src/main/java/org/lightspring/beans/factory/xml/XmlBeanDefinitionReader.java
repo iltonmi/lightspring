@@ -13,6 +13,7 @@ import org.lightspring.beans.factory.config.RuntimeBeanReference;
 import org.lightspring.beans.factory.config.TypedStringValue;
 import org.lightspring.beans.factory.support.BeanDefinitionRegistry;
 import org.lightspring.beans.factory.support.GenericBeanDefinition;
+import org.lightspring.context.annotation.ClassPathBeanDefinitionScanner;
 import org.lightspring.core.io.Resource;
 import org.lightspring.util.StringUtils;
 
@@ -40,6 +41,12 @@ public class XmlBeanDefinitionReader {
 
     public static final String TYPE_ATTRIBUTE = "type";
 
+    public static final String BEANS_NAMESPACE_URI = "http://www.springframework.org/schema/beans";
+
+    public static final String CONTEXT_NAMESPACE_URI = "http://www.springframework.org/schema/context";
+
+    private static final String BASE_PACKAGE_ATTRIBUTE = "base-package";
+
     protected final Log logger = LogFactory.getLog(getClass());
 
     BeanDefinitionRegistry registry;
@@ -58,15 +65,12 @@ public class XmlBeanDefinitionReader {
             Iterator itr = root.elementIterator();
             while (itr.hasNext()) {
                 Element ele = (Element) itr.next();
-                String id = ele.attributeValue(ID_ATTRIBUTE);
-                String beanClassName = ele.attributeValue(CLASS_ATTRIBUTE);
-                BeanDefinition bd = new GenericBeanDefinition(id, beanClassName);
-                if (ele.attribute(SCOPE_ATTRIBUTE) != null){
-                    bd.setScope(ele.attributeValue(SCOPE_ATTRIBUTE));
+                String namespaceUri = ele.getNamespaceURI();
+                if (isContextNamespace(namespaceUri)) {
+                    parseComponentElement(ele); //例如<context:component-scan>
+                }else if (isDefaultNamespace(namespaceUri)){
+                    parseDefaultElement(ele); //例如普通的Bean
                 }
-                parseConstructorArgElements(ele,bd);
-                parsePropertyElement(ele,bd);
-                this.registry.registerBeanDefinition(id, bd);
             }
         } catch (Exception e) {
             throw new BeanDefinitionStoreException("IOException parsing XML document", e);
@@ -79,6 +83,24 @@ public class XmlBeanDefinitionReader {
                 }
             }
         }
+    }
+
+    private void parseComponentElement(Element ele){
+        String basePackages = ele.attributeValue(BASE_PACKAGE_ATTRIBUTE);
+        ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(this.registry);
+        scanner.doScan(basePackages);
+    }
+
+    private void parseDefaultElement(Element ele){
+        String id = ele.attributeValue(ID_ATTRIBUTE);
+        String beanClassName = ele.attributeValue(CLASS_ATTRIBUTE);
+        BeanDefinition bd = new GenericBeanDefinition(id, beanClassName);
+        if (ele.attribute(SCOPE_ATTRIBUTE) != null){
+            bd.setScope(ele.attributeValue(SCOPE_ATTRIBUTE));
+        }
+        parseConstructorArgElements(ele,bd);
+        parsePropertyElement(ele,bd);
+        this.registry.registerBeanDefinition(id, bd);
     }
 
     public void parseConstructorArgElements(Element beanEle, BeanDefinition bd){
@@ -144,5 +166,12 @@ public class XmlBeanDefinitionReader {
 
             throw new RuntimeException(elementName + " must specify a ref or value");
         }
+    }
+
+    public boolean isDefaultNamespace(String namespaceUri) {
+        return (!StringUtils.hasLength(namespaceUri) || BEANS_NAMESPACE_URI.equals(namespaceUri));
+    }
+    public boolean isContextNamespace(String namespaceUri){
+        return (!StringUtils.hasLength(namespaceUri) || CONTEXT_NAMESPACE_URI.equals(namespaceUri));
     }
 }
