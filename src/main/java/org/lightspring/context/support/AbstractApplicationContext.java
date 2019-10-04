@@ -1,5 +1,7 @@
 package org.lightspring.context.support;
 
+import org.lightspring.beans.factory.annotation.AutowiredAnnotationProcessor;
+import org.lightspring.beans.factory.config.ConfigurableBeanFactory;
 import org.lightspring.beans.factory.support.DefaultBeanFactory;
 import org.lightspring.beans.factory.xml.XmlBeanDefinitionReader;
 import org.lightspring.context.ApplicationContext;
@@ -16,6 +18,7 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         Resource resource = this.getResourceByPath(configFile);
         reader.loadBeanDefinitions(resource);
         factory.setBeanClassLoader(this.getBeanClassLoader());
+        registerBeanPostProcessors(factory);
     }
 
     public Object getBean(String beanID) {
@@ -30,5 +33,13 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
 
     public ClassLoader getBeanClassLoader() {
         return (this.beanClassLoader != null) ? this.beanClassLoader: ClassUtils.getDefaultClassLoader();
+    }
+
+    protected void registerBeanPostProcessors(ConfigurableBeanFactory beanFactory) {
+
+        AutowiredAnnotationProcessor postProcessor = new AutowiredAnnotationProcessor();
+        postProcessor.setBeanFactory(beanFactory);
+        beanFactory.addBeanPostProcessor(postProcessor);
+
     }
 }

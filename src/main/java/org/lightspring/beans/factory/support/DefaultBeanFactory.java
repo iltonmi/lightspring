@@ -6,8 +6,10 @@ import org.lightspring.beans.BeanDefinition;
 import org.lightspring.beans.PropertyValue;
 import org.lightspring.beans.SimpleTypeConverter;
 import org.lightspring.beans.factory.BeanCreationException;
+import org.lightspring.beans.factory.config.BeanPostProcessor;
 import org.lightspring.beans.factory.config.ConfigurableBeanFactory;
 import org.lightspring.beans.factory.config.DependencyDescriptor;
+import org.lightspring.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.lightspring.util.ClassUtils;
 
 
@@ -15,6 +17,7 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +26,7 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
         implements ConfigurableBeanFactory, BeanDefinitionRegistry{
 
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<String, BeanDefinition>();
+    private List<BeanPostProcessor> beanPostProcessors = new ArrayList<BeanPostProcessor>();
 
     private ClassLoader beanClassLoader;
 
@@ -36,6 +40,14 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
 
     public BeanDefinition getBeanDefinition(String beanID) {
         return this.beanDefinitionMap.get(beanID);
+    }
+
+    public void addBeanPostProcessor(BeanPostProcessor postProcessor) {
+        this.beanPostProcessors.add(postProcessor);
+    }
+
+    public List<BeanPostProcessor> getBeanPostProcessors() {
+        return this.beanPostProcessors;
     }
 
     public Object getBean(String beanID) {
@@ -79,6 +91,11 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
     }
 
     private void populateBean(BeanDefinition bd, Object bean){
+        for (BeanPostProcessor processor : this.getBeanPostProcessors()) {
+            if (processor instanceof InstantiationAwareBeanPostProcessor) {
+                ((InstantiationAwareBeanPostProcessor) processor).postProcessPropertyValues(bean, bd.getID());
+            }
+        }
         List<PropertyValue> pvs = bd.getPropertyValues();
         if (pvs == null || pvs.isEmpty()){
             return;

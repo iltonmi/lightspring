@@ -1,6 +1,7 @@
 package org.lightspring.beans.factory.annotation;
 
 import org.lightspring.beans.BeansException;
+import org.lightspring.beans.factory.BeanCreationException;
 import org.lightspring.beans.factory.config.AutowireCapableBeanFactory;
 import org.lightspring.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.lightspring.core.annotation.AnnotationUtils;
@@ -106,6 +107,11 @@ public class AutowiredAnnotationProcessor implements InstantiationAwareBeanPostP
     }
 
     public void postProcessPropertyValues(Object bean, String beanName) throws BeansException {
-
+        InjectionMetadata metadata = buildAutowiringMetadata(bean.getClass());
+        try {
+            metadata.inject(bean);
+        } catch (Throwable ex) {
+            throw new BeanCreationException(beanName, "Injection of autowired dependencies failed", ex);
+        }
     }
 }
