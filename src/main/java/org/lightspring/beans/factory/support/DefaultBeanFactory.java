@@ -6,6 +6,7 @@ import org.lightspring.beans.BeanDefinition;
 import org.lightspring.beans.PropertyValue;
 import org.lightspring.beans.SimpleTypeConverter;
 import org.lightspring.beans.factory.BeanCreationException;
+import org.lightspring.beans.factory.NoSuchBeanDefinitionException;
 import org.lightspring.beans.factory.config.BeanPostProcessor;
 import org.lightspring.beans.factory.config.ConfigurableBeanFactory;
 import org.lightspring.beans.factory.config.DependencyDescriptor;
@@ -152,5 +153,14 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
                 throw new RuntimeException("can't load class:" + bd.getBeanClassName());
             }
         }
+    }
+
+    public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
+        BeanDefinition bd = this.getBeanDefinition(name);
+        if (bd == null) {
+            throw new NoSuchBeanDefinitionException(name);
+        }
+        resolveBeanClass(bd);
+        return bd.getBeanClass();
     }
 }
