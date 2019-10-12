@@ -6,11 +6,13 @@ import org.lightspring.beans.BeanDefinition;
 import org.lightspring.beans.PropertyValue;
 import org.lightspring.beans.SimpleTypeConverter;
 import org.lightspring.beans.factory.BeanCreationException;
+import org.lightspring.beans.factory.BeanFactoryAware;
 import org.lightspring.beans.factory.NoSuchBeanDefinitionException;
 import org.lightspring.beans.factory.config.BeanPostProcessor;
 import org.lightspring.beans.factory.config.ConfigurableBeanFactory;
 import org.lightspring.beans.factory.config.DependencyDescriptor;
 import org.lightspring.beans.factory.config.InstantiationAwareBeanPostProcessor;
+import org.lightspring.context.support.AbstractApplicationContext;
 import org.lightspring.util.ClassUtils;
 
 
@@ -23,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
-        implements ConfigurableBeanFactory, BeanDefinitionRegistry{
+public class DefaultBeanFactory extends AbstractBeanFactory
+        implements BeanDefinitionRegistry {
 
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<String, BeanDefinition>();
     private List<BeanPostProcessor> beanPostProcessors = new ArrayList<BeanPostProcessor>();
@@ -67,11 +69,12 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
         return this.createBean(bd);
     }
 
-    private Object createBean(BeanDefinition bd){
+    @Override
+    protected Object createBean(BeanDefinition bd) {
         Object bean = instantiateBean(bd);
         //set up the properties of the bean
         populateBean(bd, bean);
-
+        bean = initializeBean(bd, bean);
         return bean;
     }
 
@@ -162,5 +165,36 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
         }
         resolveBeanClass(bd);
         return bd.getBeanClass();
+    }
+
+    public List<Object> getBeansByType(Class<?> type) {
+        List<Object> result = new ArrayList<Object>();
+        List<String> beanIDs = this.getBeanIDsByType(type);
+        for (String beanID : beanIDs) {
+            result.add(this.getBean(beanID));
+        }
+        return result;
+    }
+
+    private List<String> getBeanIDsByType(Class<?> type) {
+        List<String> result = new ArrayList<String>();
+        for (String beanName : this.beanDefinitionMap.keySet()) {
+            if (type.isAssignableFrom(this.getType(beanName))) {
+                result.add(beanName);
+            }
+        }
+        return result;
+    }
+
+    protected Object initializeBean(BeanDefinition bd, Object bean) {
+        invokeAwareMethods(bean);
+        //Todo，调用Bean的init方法，暂不实现
+        return bean;
+    }
+
+    private void invokeAwareMethods(final Object bean) {
+        if (bean instanceof BeanFactoryAware) {
+            ((BeanFactoryAware) bean).setBeanFactory(this);
+        }
     }
 }

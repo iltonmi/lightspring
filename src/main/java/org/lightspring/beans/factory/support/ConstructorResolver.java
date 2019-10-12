@@ -15,13 +15,12 @@ import java.util.List;
 public class ConstructorResolver {
 
 	protected final Log logger = LogFactory.getLog(getClass());
-	
-	
-	private final ConfigurableBeanFactory beanFactory;
 
 
-	
-	public ConstructorResolver(ConfigurableBeanFactory beanFactory) {
+    private final AbstractBeanFactory beanFactory;
+
+
+    public ConstructorResolver(AbstractBeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 	}
 

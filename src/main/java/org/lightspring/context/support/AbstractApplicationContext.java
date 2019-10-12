@@ -9,6 +9,8 @@ import org.lightspring.context.ApplicationContext;
 import org.lightspring.core.io.Resource;
 import org.lightspring.util.ClassUtils;
 
+import java.util.List;
+
 public abstract class AbstractApplicationContext implements ApplicationContext {
     private DefaultBeanFactory factory;
     private ClassLoader beanClassLoader;
@@ -46,5 +48,9 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
 
     public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
         return this.factory.getType(name);
+    }
+
+    public List<Object> getBeansByType(Class<?> type) {
+        return this.factory.getBeansByType(type);
     }
 }
