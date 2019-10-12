@@ -1,5 +1,6 @@
 package org.lightspring.context.support;
 
+import org.lightspring.aop.aspectj.AspectJAutoProxyCreator;
 import org.lightspring.beans.factory.NoSuchBeanDefinitionException;
 import org.lightspring.beans.factory.annotation.AutowiredAnnotationProcessor;
 import org.lightspring.beans.factory.config.ConfigurableBeanFactory;
@@ -39,11 +40,16 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
     }
 
     protected void registerBeanPostProcessors(ConfigurableBeanFactory beanFactory) {
-
-        AutowiredAnnotationProcessor postProcessor = new AutowiredAnnotationProcessor();
-        postProcessor.setBeanFactory(beanFactory);
-        beanFactory.addBeanPostProcessor(postProcessor);
-
+        {
+            AutowiredAnnotationProcessor postProcessor = new AutowiredAnnotationProcessor();
+            postProcessor.setBeanFactory(beanFactory);
+            beanFactory.addBeanPostProcessor(postProcessor);
+        }
+        {
+            AspectJAutoProxyCreator postProcessor = new AspectJAutoProxyCreator();
+            postProcessor.setBeanFactory(beanFactory);
+            beanFactory.addBeanPostProcessor(postProcessor);
+        }
     }
 
     public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
