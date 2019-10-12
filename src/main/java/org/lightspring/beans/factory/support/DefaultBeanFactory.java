@@ -1,7 +1,8 @@
 package org.lightspring.beans.factory.support;
 
 
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.lightspring.beans.BeanDefinition;
 import org.lightspring.beans.BeansException;
 import org.lightspring.beans.PropertyValue;
@@ -28,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultBeanFactory extends AbstractBeanFactory
         implements BeanDefinitionRegistry {
-
+    private static final Log logger = LogFactory.getLog(DefaultBeanFactory.class);
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<String, BeanDefinition>();
     private List<BeanPostProcessor> beanPostProcessors = new ArrayList<BeanPostProcessor>();
 
@@ -180,7 +181,14 @@ public class DefaultBeanFactory extends AbstractBeanFactory
     private List<String> getBeanIDsByType(Class<?> type) {
         List<String> result = new ArrayList<String>();
         for (String beanName : this.beanDefinitionMap.keySet()) {
-            if (type.isAssignableFrom(this.getType(beanName))) {
+            Class<?> beanClass = null;
+            try {
+                beanClass = this.getType(beanName);
+            } catch (Exception e) {
+                logger.warn("can't load class for bean :" + beanName + ", skip it.");
+                continue;
+            }
+            if ((beanClass != null) && type.isAssignableFrom(this.getType(beanName))) {
                 result.add(beanName);
             }
         }
