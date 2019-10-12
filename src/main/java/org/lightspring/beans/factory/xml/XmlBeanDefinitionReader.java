@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.lightspring.aop.config.ConfigBeanDefinitionParser;
 import org.lightspring.beans.BeanDefinition;
 import org.lightspring.beans.ConstructorArgument;
 import org.lightspring.beans.PropertyValue;
@@ -45,6 +46,8 @@ public class XmlBeanDefinitionReader {
 
     public static final String CONTEXT_NAMESPACE_URI = "http://www.springframework.org/schema/context";
 
+    public static final String AOP_NAMESPACE_URI = "http://www.springframework.org/schema/aop";
+
     private static final String BASE_PACKAGE_ATTRIBUTE = "base-package";
 
     protected final Log logger = LogFactory.getLog(getClass());
@@ -70,6 +73,8 @@ public class XmlBeanDefinitionReader {
                     parseComponentElement(ele); //例如<context:component-scan>
                 }else if (isDefaultNamespace(namespaceUri)){
                     parseDefaultElement(ele); //例如普通的Bean
+                } else if (this.isAOPNamespace(namespaceUri)) {
+                    parseAOPElement(ele);  //例如 <aop:config>
                 }
             }
         } catch (Exception e) {
@@ -89,6 +94,11 @@ public class XmlBeanDefinitionReader {
         String basePackages = ele.attributeValue(BASE_PACKAGE_ATTRIBUTE);
         ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(this.registry);
         scanner.doScan(basePackages);
+    }
+
+    private void parseAOPElement(Element ele) {
+        ConfigBeanDefinitionParser parser = new ConfigBeanDefinitionParser();
+        parser.parse(ele, this.registry);
     }
 
     private void parseDefaultElement(Element ele){
@@ -173,5 +183,9 @@ public class XmlBeanDefinitionReader {
     }
     public boolean isContextNamespace(String namespaceUri){
         return (!StringUtils.hasLength(namespaceUri) || CONTEXT_NAMESPACE_URI.equals(namespaceUri));
+    }
+
+    public boolean isAOPNamespace(String namespaceUri) {
+        return (!StringUtils.hasLength(namespaceUri) || AOP_NAMESPACE_URI.equals(namespaceUri));
     }
 }

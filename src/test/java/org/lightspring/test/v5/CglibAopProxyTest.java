@@ -6,9 +6,11 @@ import org.junit.Test;
 import org.lightspring.aop.aspectj.AspectJAfterReturningAdvice;
 import org.lightspring.aop.aspectj.AspectJBeforeAdvice;
 import org.lightspring.aop.aspectj.AspectJExpressionPointcut;
+import org.lightspring.aop.config.AspectInstanceFactory;
 import org.lightspring.aop.framework.AopConfig;
 import org.lightspring.aop.framework.AopConfigSupport;
 import org.lightspring.aop.framework.CglibProxyFactory;
+import org.lightspring.beans.factory.BeanFactory;
 import org.lightspring.service.v5.PetStoreService;
 import org.lightspring.tx.TransactionManager;
 import org.lightspring.util.MessageTracker;
@@ -16,32 +18,37 @@ import org.lightspring.util.MessageTracker;
 import java.util.List;
 
 
-public class CglibAopProxyTest {
+public class CglibAopProxyTest extends AbstractV5Test {
 
     private static AspectJBeforeAdvice beforeAdvice = null;
     private static AspectJAfterReturningAdvice afterAdvice = null;
     private static AspectJExpressionPointcut pc = null;
-
-    private TransactionManager tx;
+    private BeanFactory beanFactory = null;
+    private AspectInstanceFactory aspectInstanceFactory = null;
 
     @Before
     public void setUp() throws Exception {
 
 
-        tx = new TransactionManager();
+        MessageTracker.clearMsgs();
+
         String expression = "execution(* org.lightspring.service.v5.*.placeOrder(..))";
         pc = new AspectJExpressionPointcut();
         pc.setExpression(expression);
 
+        beanFactory = this.getBeanFactory("petstore-v5.xml");
+        aspectInstanceFactory = this.getAspectInstanceFactory("tx");
+        aspectInstanceFactory.setBeanFactory(beanFactory);
+
         beforeAdvice = new AspectJBeforeAdvice(
-                TransactionManager.class.getMethod("start"),
+                getAdviceMethod("start"),
                 pc,
-                tx);
+                aspectInstanceFactory);
 
         afterAdvice = new AspectJAfterReturningAdvice(
                 TransactionManager.class.getMethod("commit"),
                 pc,
-                tx);
+                aspectInstanceFactory);
 
     }
 
