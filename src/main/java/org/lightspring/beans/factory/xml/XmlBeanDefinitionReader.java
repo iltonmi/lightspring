@@ -119,6 +119,7 @@ public class XmlBeanDefinitionReader {
             Element ele = (Element)itr.next();
             parseConstructorArgElement(ele, bd);
         }
+
     }
 
     public void parseConstructorArgElement(Element ele, BeanDefinition bd){

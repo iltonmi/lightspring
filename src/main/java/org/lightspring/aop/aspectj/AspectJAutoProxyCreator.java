@@ -40,10 +40,12 @@ public class AspectJAutoProxyCreator implements BeanPostProcessor {
         return false;
     }
 
+    @Override
     public Object beforeInitialization(Object bean, String beanName) throws BeansException {
         return bean;
     }
 
+    @Override
     public Object afterInitialization(Object bean, String beanName) throws BeansException {
 
         //如果这个Bean本身就是Advice及其子类，那就不要再生成动态代理了。
@@ -86,7 +88,7 @@ public class AspectJAutoProxyCreator implements BeanPostProcessor {
         for (Class<?> targetInterface : targetInterfaces) {
             config.addInterface(targetInterface);
         }
-
+        //设置被增强的对象
         config.setTargetObject(bean);
 
         AopProxyFactory proxyFactory = null;

@@ -16,6 +16,9 @@ import org.lightspring.util.StringUtils;
  */
 public class AspectInstanceFactory implements BeanFactoryAware {
 
+    /**
+     * 包含增强功能的切面
+     */
     private String aspectBeanName;
 
     private BeanFactory beanFactory;
@@ -24,6 +27,7 @@ public class AspectInstanceFactory implements BeanFactoryAware {
         this.aspectBeanName = aspectBeanName;
     }
 
+    @Override
     public void setBeanFactory(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
         if (!StringUtils.hasText(this.aspectBeanName)) {

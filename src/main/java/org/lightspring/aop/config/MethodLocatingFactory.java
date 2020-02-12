@@ -25,6 +25,7 @@ public class MethodLocatingFactory implements FactoryBean<Method>, BeanFactoryAw
     }
 
 
+    @Override
     public void setBeanFactory(BeanFactory beanFactory) {
         if (!StringUtils.hasText(this.targetBeanName)) {
             throw new IllegalArgumentException("Property 'targetBeanName' is required");
@@ -48,10 +49,12 @@ public class MethodLocatingFactory implements FactoryBean<Method>, BeanFactoryAw
     }
 
 
+    @Override
     public Method getObject() throws Exception {
         return this.method;
     }
 
+    @Override
     public Class<?> getObjectType() {
         return Method.class;
     }

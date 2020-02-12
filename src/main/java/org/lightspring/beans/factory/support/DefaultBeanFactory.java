@@ -38,23 +38,28 @@ public class DefaultBeanFactory extends AbstractBeanFactory
     public DefaultBeanFactory() {
 
     }
-    public void registerBeanDefinition(String beanID,BeanDefinition bd){
+    @Override
+    public void registerBeanDefinition(String beanID, BeanDefinition bd){
         this.beanDefinitionMap.put(beanID, bd);
     }
 
 
+    @Override
     public BeanDefinition getBeanDefinition(String beanID) {
         return this.beanDefinitionMap.get(beanID);
     }
 
+    @Override
     public void addBeanPostProcessor(BeanPostProcessor postProcessor) {
         this.beanPostProcessors.add(postProcessor);
     }
 
+    @Override
     public List<BeanPostProcessor> getBeanPostProcessors() {
         return this.beanPostProcessors;
     }
 
+    @Override
     public Object getBean(String beanID) {
         BeanDefinition bd = this.beanDefinitionMap.get(beanID);
         if (bd == null){
@@ -128,14 +133,17 @@ public class DefaultBeanFactory extends AbstractBeanFactory
         }
     }
 
+    @Override
     public void setBeanClassLoader(ClassLoader beanClassLoader) {
         this.beanClassLoader = beanClassLoader;
     }
 
+    @Override
     public ClassLoader getBeanClassLoader() {
         return (this.beanClassLoader != null) ? this.beanClassLoader: ClassUtils.getDefaultClassLoader();
     }
 
+    @Override
     public Object resolveDependency(DependencyDescriptor descriptor) {
         Class<?> typeToMatch = descriptor.getDependencyType();
         for (BeanDefinition bd : this.beanDefinitionMap.values()) {
@@ -160,6 +168,7 @@ public class DefaultBeanFactory extends AbstractBeanFactory
         }
     }
 
+    @Override
     public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
         BeanDefinition bd = this.getBeanDefinition(name);
         if (bd == null) {
@@ -169,6 +178,7 @@ public class DefaultBeanFactory extends AbstractBeanFactory
         return bd.getBeanClass();
     }
 
+    @Override
     public List<Object> getBeansByType(Class<?> type) {
         List<Object> result = new ArrayList<Object>();
         List<String> beanIDs = this.getBeanIDsByType(type);
@@ -211,7 +221,7 @@ public class DefaultBeanFactory extends AbstractBeanFactory
         for (BeanPostProcessor beanProcessor : getBeanPostProcessors()) {
             result = beanProcessor.afterInitialization(result, beanName);
             if (result == null) {
-                return result;
+                return null;
             }
         }
         return result;

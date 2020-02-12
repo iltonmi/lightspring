@@ -22,6 +22,8 @@ public class BeanDefinitionValueResolver {
         } else if (value instanceof TypedStringValue){
             return ((TypedStringValue) value).getValue();
         } else if (value instanceof BeanDefinition) {
+            //匿名内置Bean
+            //Bean定义不会出现在BeanFactory的BeanDefinitionMap
             // Resolve plain BeanDefinition, without contained name: use dummy name.
             BeanDefinition bd = (BeanDefinition) value;
 

@@ -6,11 +6,24 @@ import org.lightspring.aop.config.AspectInstanceFactory;
 
 import java.lang.reflect.Method;
 
+/**
+ * @author weili
+ */
 public abstract class AbstractAspectJAdvice implements Advice {
 
-
+    /**
+     * 被增强的方法
+     */
     protected Method adviceMethod;
+
+    /**
+     * 拦截哪个方法
+     */
     protected AspectJExpressionPointcut pointcut;
+
+    /**
+     * 储存包含增强方法的对象的工厂
+     */
     protected AspectInstanceFactory adviceObjectFactory;
 
 
@@ -29,6 +42,7 @@ public abstract class AbstractAspectJAdvice implements Advice {
         adviceMethod.invoke(adviceObjectFactory.getAspectInstance());
     }
 
+    @Override
     public Pointcut getPointcut() {
         return this.pointcut;
     }

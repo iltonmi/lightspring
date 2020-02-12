@@ -40,6 +40,7 @@ public class ReflectiveMethodInvocation implements MethodInvocation {
     }
 
 
+    @Override
     public final Object getThis() {
         return this.targetObject;
     }
@@ -50,15 +51,18 @@ public class ReflectiveMethodInvocation implements MethodInvocation {
      * May or may not correspond with a method invoked on an underlying
      * implementation of that interface.
      */
+    @Override
     public final Method getMethod() {
         return this.targetMethod;
     }
 
+    @Override
     public final Object[] getArguments() {
         return (this.arguments != null ? this.arguments : new Object[0]);
     }
 
 
+    @Override
     public Object proceed() throws Throwable {
         //	所有的拦截器已经调用完成
         if (this.currentInterceptorIndex == this.interceptors.size() - 1) {
@@ -85,6 +89,7 @@ public class ReflectiveMethodInvocation implements MethodInvocation {
         return this.targetMethod.invoke(this.targetObject, this.arguments);
     }
 
+    @Override
     public AccessibleObject getStaticPart() {
         return this.targetMethod;
     }

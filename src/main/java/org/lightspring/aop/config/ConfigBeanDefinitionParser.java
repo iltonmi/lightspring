@@ -119,7 +119,7 @@ public class ConfigBeanDefinitionParser /*implements BeanDefinitionParser*/ {
         aspectFactoryDef.getPropertyValues().add(new PropertyValue("aspectBeanName", aspectName));
         aspectFactoryDef.setSynthetic(true);
 
-        // register the pointcut
+        // register the advice
         GenericBeanDefinition adviceDef = createAdviceDefinition(
                 adviceElement, registry, aspectName, order, methodDefinition, aspectFactoryDef,
                 beanDefinitions, beanReferences);
@@ -150,18 +150,23 @@ public class ConfigBeanDefinitionParser /*implements BeanDefinitionParser*/ {
 
 
         ConstructorArgument cav = adviceDefinition.getConstructorArgument();
+        //包含增强内容的Bean名称以及增强的方法名称，能够定位方法的方法工厂
         cav.addArgumentValue(methodDef);
-
+        //包含被增强的方法的描述
         Object pointcut = parsePointcutProperty(adviceElement);
         if (pointcut instanceof BeanDefinition) {
+            //匿名point cut
+            //匿名内置Bean
+            //Bean定义不会出现在BeanFactory的BeanDefinitionMap
             cav.addArgumentValue(pointcut);
-
             beanDefinitions.add((BeanDefinition) pointcut);
         } else if (pointcut instanceof String) {
+            //引用point cut
             RuntimeBeanReference pointcutRef = new RuntimeBeanReference((String) pointcut);
             cav.addArgumentValue(pointcutRef);
             beanReferences.add(pointcutRef);
         }
+        //包含增强内容的Bean单例的工厂
         cav.addArgumentValue(aspectFactoryDef);
 
         return adviceDefinition;
@@ -232,6 +237,7 @@ public class ConfigBeanDefinitionParser /*implements BeanDefinitionParser*/ {
             return null;
         } else if (element.attribute(POINTCUT) != null) {
             // Create a pointcut for the anonymous pc and register it.
+            //匿名point cut
             String expression = element.attributeValue(POINTCUT);
             GenericBeanDefinition pointcutDefinition = createPointcutDefinition(expression);
             //pointcutDefinition.setSource(parserContext.extractSource(element));

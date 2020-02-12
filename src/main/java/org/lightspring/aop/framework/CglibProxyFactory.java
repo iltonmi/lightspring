@@ -88,10 +88,12 @@ public class CglibProxyFactory implements AopProxyFactory {
 //	}
 
 
+    @Override
     public Object getProxy() {
         return getProxy(null);
     }
 
+    @Override
     public Object getProxy(ClassLoader classLoader) {
         if (logger.isDebugEnabled()) {
             logger.debug("Creating CGLIB proxy: target source is " + this.config.getTargetClass());
@@ -107,7 +109,8 @@ public class CglibProxyFactory implements AopProxyFactory {
             }
             enhancer.setSuperclass(rootClass);
 
-            enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE); //"BySpringCGLIB"
+            //"BySpringCGLIB"
+            enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
             enhancer.setInterceptDuringConstruction(false);
 
             Callback[] callbacks = getCallbacks(rootClass);
@@ -206,6 +209,7 @@ public class CglibProxyFactory implements AopProxyFactory {
             this.config = advised;
         }
 
+        @Override
         public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
 
 
@@ -253,6 +257,7 @@ public class CglibProxyFactory implements AopProxyFactory {
         }
 
 
+        @Override
         public int accept(Method method) {
             // 注意，这里做了简化
             return AOP_PROXY;
