@@ -25,6 +25,7 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         registerBeanPostProcessors(factory);
     }
 
+    @Override
     public Object getBean(String beanID) {
         return this.factory.getBean(beanID);
     }
@@ -39,6 +40,10 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         return (this.beanClassLoader != null) ? this.beanClassLoader: ClassUtils.getDefaultClassLoader();
     }
 
+    /**
+     * 默认后置处理器
+     * @param beanFactory
+     */
     protected void registerBeanPostProcessors(ConfigurableBeanFactory beanFactory) {
         {
             AutowiredAnnotationProcessor postProcessor = new AutowiredAnnotationProcessor();
@@ -52,10 +57,12 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         }
     }
 
+    @Override
     public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
         return this.factory.getType(name);
     }
 
+    @Override
     public List<Object> getBeansByType(Class<?> type) {
         return this.factory.getBeansByType(type);
     }

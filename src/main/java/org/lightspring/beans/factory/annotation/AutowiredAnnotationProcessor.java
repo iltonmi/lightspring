@@ -38,8 +38,8 @@ public class AutowiredAnnotationProcessor implements InstantiationAwareBeanPostP
             for (Field field : targetClass.getDeclaredFields()) {
                 Annotation ann = findAutowiredAnnotation(field);
                 if (ann != null) {
+                    //不支持静态变量注入
                     if (Modifier.isStatic(field.getModifiers())) {
-
                         continue;
                     }
                     boolean required = determineRequiredStatus(ann);
@@ -51,8 +51,7 @@ public class AutowiredAnnotationProcessor implements InstantiationAwareBeanPostP
             }
             elements.addAll(0, currElements);
             targetClass = targetClass.getSuperclass();
-        }
-        while (targetClass != null && targetClass != Object.class);
+        } while (targetClass != null && targetClass != Object.class);
 
         return new InjectionMetadata(clazz, elements);
     }
@@ -87,25 +86,30 @@ public class AutowiredAnnotationProcessor implements InstantiationAwareBeanPostP
         this.beanFactory = beanFactory;
     }
 
+    @Override
     public Object beforeInitialization(Object bean, String beanName) throws BeansException {
         //do nothing
         return bean;
     }
 
+    @Override
     public Object afterInitialization(Object bean, String beanName) throws BeansException {
         // do nothing
         return bean;
     }
 
+    @Override
     public Object beforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
         return null;
     }
 
+    @Override
     public boolean afterInstantiation(Object bean, String beanName) throws BeansException {
         // do nothing
         return true;
     }
 
+    @Override
     public void postProcessPropertyValues(Object bean, String beanName) throws BeansException {
         InjectionMetadata metadata = buildAutowiringMetadata(bean.getClass());
         try {

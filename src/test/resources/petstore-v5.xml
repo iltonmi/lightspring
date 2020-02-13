@@ -13,7 +13,7 @@
     </context:component-scan>
 
     <bean id="tx" class="org.lightspring.tx.TransactionManager"/>
-
+    
     <aop:config>
 
         <aop:aspect ref="tx">
