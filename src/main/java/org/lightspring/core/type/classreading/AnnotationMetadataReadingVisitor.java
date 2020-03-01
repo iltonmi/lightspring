@@ -25,14 +25,17 @@ public class AnnotationMetadataReadingVisitor extends ClassMetadataReadingVisito
 		this.annotationSet.add(className);
 		return new AnnotationAttributesReadingVisitor(className, this.attributeMap);
 	}
+	@Override
 	public Set<String> getAnnotationTypes() {
 		return this.annotationSet;
 	}
 
+	@Override
 	public boolean hasAnnotation(String annotationType) {
 		return this.annotationSet.contains(annotationType);
 	}
 
+	@Override
 	public AnnotationAttributes getAnnotationAttributes(String annotationType) {
 		return this.attributeMap.get(annotationType);
 	}

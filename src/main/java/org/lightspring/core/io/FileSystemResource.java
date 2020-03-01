@@ -24,10 +24,12 @@ public class FileSystemResource implements Resource {
 		this.path = path;
 	}
 	
+	@Override
 	public InputStream getInputStream() throws IOException {
 		return new FileInputStream(this.file);
 	}
 
+	@Override
 	public String getDescription() {
 		return "file [" + this.file.getAbsolutePath() + "]";
 	}

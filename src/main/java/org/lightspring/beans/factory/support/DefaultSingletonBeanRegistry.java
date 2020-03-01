@@ -10,6 +10,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 	
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<String, Object>(64);
 
+	@Override
 	public void registerSingleton(String beanName, Object singletonObject) {
 		
 		Assert.notNull(beanName, "'beanName' must not be null");
@@ -23,6 +24,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 		
 	}
 
+	@Override
 	public Object getSingleton(String beanName) {
 		
 		return this.singletonObjects.get(beanName);

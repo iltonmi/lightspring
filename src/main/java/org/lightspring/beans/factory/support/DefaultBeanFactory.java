@@ -208,6 +208,8 @@ public class DefaultBeanFactory extends AbstractBeanFactory
     protected Object initializeBean(BeanDefinition bd, Object bean) {
         //调用感知方法
         invokeAwareMethods(bean);
+        //Todo, applyBeanPostProcessorsBeforeInitialization()，暂不实现
+        //Todo, afterPropertiesSet()，暂不实现
         //Todo，调用Bean的init方法，暂不实现
         if (!bd.isSynthetic()) {
             return applyBeanPostProcessorsAfterInitialization(bean, bd.getID());

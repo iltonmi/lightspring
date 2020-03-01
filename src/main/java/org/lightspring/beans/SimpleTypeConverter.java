@@ -67,7 +67,7 @@ public class SimpleTypeConverter implements TypeConverter {
 		this.defaultEditors.put(Short.class, new CustomNumberEditor(Short.class, true));*/
 		this.defaultEditors.put(int.class, new CustomNumberEditor(Integer.class, false));
 		this.defaultEditors.put(Integer.class, new CustomNumberEditor(Integer.class, true));
-		/*this.defaultEditors.put(long.class, new CustomNumberEditor(Long.class, false));
+		/*this.defaultEditors.put(long.cl ass, new CustomNumberEditor(Long.class, false));
 		this.defaultEditors.put(Long.class, new CustomNumberEditor(Long.class, true));
 		this.defaultEditors.put(float.class, new CustomNumberEditor(Float.class, false));
 		this.defaultEditors.put(Float.class, new CustomNumberEditor(Float.class, true));
