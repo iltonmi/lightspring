@@ -97,8 +97,8 @@ ReflectiveMethodInvocation用List保存Interceptor，链式调用3种Advice：be
 
 ## CGLIB生成代理前的处理：
 1. 设置目标类为enhancer的父类
-2. 设置Callback的MethodInterceptor
-3. 设置CallbackFilter(默认实现)
+2. 设置Callbacks的为包含MethodInterceptor的数组
+3. 设置CallbackFilter(accept()根据Method参数决定使用的Callback在数组中的索引，暂时默认返回0，只采用唯一的方法拦截器)
 3. enhancer.create()
 ### CGLIB生成代理如何调用代理方法：
 1. 拦截器的方法签名：public Object intercept(Object obj, Method method, Object[] params,MethodProxy proxy)
